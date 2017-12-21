@@ -10,6 +10,8 @@
 
 using namespace std;
 
+class IX_ScanIterator;
+
 // Record ID
 typedef struct
 {
@@ -74,7 +76,7 @@ public:
 	  free(value);
 	  currentPageNum = 0;
 	  currentSlotNum = -1;
-	  maxPageNum = 0;
+	  maxPageNum = -1;
 	  end = true; 
 	  versionTable.clear();
 	  attributeNames.clear();
@@ -84,7 +86,7 @@ public:
   PageNum currentPageNum;
   OffsetType currentSlotNum;
 
-  void setMaxPageNum(PageNum maxPageNum) { this->maxPageNum = maxPageNum; }
+  void setMaxPageNum(int maxPageNum) { this->maxPageNum = maxPageNum; }
   bool getEnd() { return end; }
   void setEnd(bool end) { this->end = end; }
   void setConditionField(OffsetType conditionField) { this->conditionField = conditionField; }
@@ -124,7 +126,7 @@ public:
   void setAttributeNames(const vector<string> &attributeNames) { this->attributeNames = attributeNames; }
 
 private:
-	PageNum maxPageNum;
+	int maxPageNum;
 	bool end;
 
 	FileHandle* fileHandle;

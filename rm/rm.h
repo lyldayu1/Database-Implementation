@@ -1,4 +1,3 @@
-
 #ifndef _rm_h_
 #define _rm_h_
 
@@ -12,12 +11,16 @@ using namespace std;
 
 # define RM_EOF (-1)  // end of a scan operator
 
+class IXFileHandle;
+
 // RM_ScanIterator is an iteratr to go through tuples
 class RM_ScanIterator {
 public:
   RM_ScanIterator() {};
   ~RM_ScanIterator() {};
   RBFM_ScanIterator rbfm_ScanIterator;
+  FileHandle fileHandle;
+
   // "data" follows the same format as RelationManager::insertTuple()
   RC getNextTuple(RID &rid, void *data) { 
     return rbfm_ScanIterator.getNextRecord(rid,data); };
@@ -27,15 +30,16 @@ public:
 // RM_IndexScanIterator is an iterator to go through index entries
 class RM_IndexScanIterator {
 public:
-	RM_IndexScanIterator() {};  	// Constructor
-	~RM_IndexScanIterator() {}; 	// Destructor
+	RM_IndexScanIterator();  	// Constructor
+	~RM_IndexScanIterator(); 	// Destructor
 
 									// "key" follows the same format as in IndexManager::insertEntry()
-	RC getNextEntry(RID &rid, void *key) { return ixScanIterator.getNextEntry(rid, data); };  	// Get next matching entry
-	RC close() { return ixScanIterator.close(); };             			// Terminate index scan
+	RC getNextEntry(RID &rid, void *key);  	// Get next matching entry
+	RC close();             			// Terminate index scan
 
 public:
-	IX_ScanIterator ixScanIterator;
+	IX_ScanIterator* ixScanIterator;
+	IXFileHandle* ixfileHandle;
 };
 
 // Relation Manager
@@ -45,6 +49,7 @@ public:
   RecordBasedFileManager *fm_table;
   FileHandle fh_table;
   FileHandle fh_col;
+  IXFileHandle* ixfileHandle;
   unordered_map<string, vector<Attribute>> map_attributes;
   unordered_map<string, vector<vector<Attribute>>> map_versionTable;
   unordered_map<string, bool> map_hasIndex;
